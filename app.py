@@ -16,32 +16,13 @@ from storage import (
 
 st.set_page_config(page_title="Do This Today", page_icon="🔥", layout="centered")
 
-
-def login_screen():
-    st.title("🔥 Do This Today")
-    st.subheader("請先登入")
-    st.button("用 Google 登入", on_click=st.login)
-
-
-# ===== 登入判斷 =====
-if not st.user.is_logged_in:
-    login_screen()
-    st.stop()
-
-# ===== 已登入畫面 =====
-st.success(f"已登入：{st.user.get('email', 'unknown')}")
-
-col1, col2 = st.columns([4, 1])
-with col2:
-    if st.button("登出"):
-        st.logout()
-
 st.title("🔥 Do This Today")
 st.caption("AI 幫你決定今天最該做的 3 件事")
 
 data = load_data()
 profile = data["profile"]
 
+# ===== 使用者設定 =====
 with st.expander("1. 設定你的個人資料", expanded=True):
     goal = st.text_input("你的主要目標", value=profile.get("goal", ""))
     weakness = st.text_input("你的主要弱點", value=profile.get("weakness", ""))
@@ -51,6 +32,7 @@ with st.expander("1. 設定你的個人資料", expanded=True):
         update_profile(goal, weakness, notes)
         st.success("已儲存")
 
+# ===== 任務生成 =====
 st.divider()
 st.subheader("2. 生成今天的 3 件事")
 
@@ -69,6 +51,7 @@ if st.button("給我今天該做的事", type="primary"):
     except Exception as e:
         st.error(str(e))
 
+# ===== 顯示任務 =====
 tasks = get_last_tasks()
 
 if tasks:
@@ -113,6 +96,7 @@ if tasks:
         else:
             st.warning("已儲存，但今天沒有完成任何任務，所以 streak 不增加")
 
+    # ===== 分享 =====
     st.divider()
     st.subheader("4. 分享")
 
@@ -130,6 +114,7 @@ if tasks:
 else:
     st.info("先按『給我今天該做的事』來生成任務")
 
+# ===== 歷史紀錄 =====
 st.divider()
 
 with st.expander("5. 最近紀錄"):
